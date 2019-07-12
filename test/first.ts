@@ -1,12 +1,30 @@
 #!/usr/bin/env node
 
-import * as cp from 'child_process';
-import * as path from 'path';
-import * as fs from 'fs';
-import * as http from 'http';
-import * as assert from 'assert';
-import * as EE from 'events';
-import * as strm from "stream";
+const cp = require('child_process');
+const path = require('path');
+const fs = require('fs');
+const http = require('http');
+const assert = require('assert');
+const EE = require('events');
+const strm = require('stream');
 
+const {deepMixin} = require('deep.mixin');
 
-console.log('your simple typescript test goes here.');
+const z = {c: 5, d: 333, g: 888};
+const v = {};
+
+console.log(deepMixin(v, {a: {b: z}}, {a: {e: z, b: {c: 3, d: 44}}}));
+
+const m1 = {
+  a: '3', foo() {
+    console.log('m1');
+  }
+};
+
+const m2 = {
+  a: '3', fo() {
+    console.log('m2');
+  }
+};
+
+console.log(deepMixin(m1, m2).foo());

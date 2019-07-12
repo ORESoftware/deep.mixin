@@ -1,5 +1,5 @@
 {
-  "name": "deep.mixin",
+  "name": "@oresoftware/deep.mixin",
   "version": "0.0.1001",
   "description": "Semver-oriented TypeScript library skeleton.",
   "main": "dist/main.js",
@@ -7,7 +7,7 @@
   "types": "dist/main.d.ts",
   "typings": "dist/main.d.ts",
   "scripts": {
-    "test": "suman test",
+    "test": "node test/simple.js",
     "postinstall": "./assets/postinstall.sh",
     "xyz": "./scripts/npm/xyz.sh"
   },
