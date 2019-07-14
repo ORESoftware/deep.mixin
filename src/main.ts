@@ -7,38 +7,100 @@ export const r2gSmokeTest = function () {
 };
 
 
-type HasIndex = {[key:string]: any};
+type HasIndex = { [key: string]: any };
 
-const mixin = (a:HasIndex, b:HasIndex, s: Set<any>) => {
+
+const copy = (a: HasIndex) => {
   
-  for (let [key, val] of Object.entries(b)) {
+  const ret = {} as any;
+  
+  for(const [k,v] of Object.entries(a)){
+    ret[k] = v;
+  }
+  
+  return ret;
+  
+};
+
+const mixin = (a: HasIndex, b: HasIndex, s: Set<any>) => {
+  
+  // if(typeof a !== 'object'){
+  //   return b || {};
+  // }
+  
+  // if(typeof b !== 'object'){
+  //   return a || {};
+  // }
+  
+  console.log('a:', a);
+  console.log('b:', b);
+  console.log('-----------');
+  
+  for (const [key, val] of Object.entries(b)) {
     
-    if (typeof val !== 'object' || val === null) {
-      a[key] = b[key];
+    // console.log('a:', key, a[key]);
+    // console.log('b:', key, b[key]);
+    
+    if (!(val && typeof val === 'object')) {
+      a[key] = val;
       continue;
     }
+  
+    // if (!(val && typeof val === 'function')) {
+    //   a[key] = val;
+    //   continue;
+    // }
     
     if (!a.hasOwnProperty(key)) {
-      a[key] = b[key];
+      a[key] = val;
       continue;
     }
     
-    if (s.has(b[key])) {
-      a[key] = b[key];
+    if (!(a[key] && typeof a[key] === 'object')) {
+      a[key] = val;
       continue;
     }
     
-    s.add(b[key]);
+    if (a[key] === val) {
+      continue;
+    }
     
-    mixin(a[key], b[key], s);
+    // if (s.has(val)) {
+    //   a[key] = val;
+    //   continue;
+    // }
+    //
+    // s.add(val);
+    
+    const c = copy(a[key]);
+    
+    mixin(c, val, s);
+    
+    a[key] = c;
+    
+    // a[key] = b[key];
   }
   
   return a;
   
 };
 
+// export const deepMixin = (...v: object[]) => {
+//   return v.reduce((a, b) => mixin(a, b, new Set()), {});
+// };
+
+const assert = require('assert');
+
 export const deepMixin = (...v: object[]) => {
-  return v.reduce((a, b) => mixin(a, b, new Set()), {});
+  
+  const z = {};
+  
+  return v.reduce((a, b) => {
+    assert(a === z);
+    return mixin(a, b, new Set())
+  }, z);
+  
+  
 };
 
 export default deepMixin;
