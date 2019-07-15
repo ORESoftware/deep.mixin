@@ -75,3 +75,19 @@ console.log(deepMixin(v1,v2));  // next line
 }
 ```
 
+
+
+### Other / Etc
+
+> You can flip the order of operands, using  `deepMixinRight()`
+> (Named because of reduce/reduceRight)
+
+```js
+
+const v4 =  deepMixin(thirdPrecedence, secondPrec, firstPrecendence);
+
+// or switch the order:
+const v4 = deepMixinRight(firstPrecendence, secondPrec, thirdPrec)
+
+
+```

@@ -95,7 +95,7 @@ const {deepMixin} = require('@oresoftware/deep.mixin');
   
 
   assert.strictEqual(deepMixin(m2, m1).cat.bird, 4);
-  assert.strictEqual(deepMixin(m2, m1).cat.dog, m1.cat.dog);
+  assert.deepStrictEqual(deepMixin(m2, m1).cat.dog, m1.cat.dog);
 }
 
 

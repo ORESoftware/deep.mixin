@@ -15,7 +15,7 @@ const copyObject = (a: HasIndex) => {
   const ret = {} as any;
   
   for (const [k, v] of Object.entries(a)) {
-    ret[k] = v;
+    ret[k] = copy(v);
   }
   
   return Object.setPrototypeOf(ret, Object.getPrototypeOf(a));
@@ -27,10 +27,12 @@ const copyArray = (a: HasIndex) => {
   const ret = a.slice(0);
   
   for (const [k, v] of Object.entries(a)) {
-    ret[k] = v;
+    ret[k] = copy(v);
   }
   
-  return Object.setPrototypeOf(ret, Object.getPrototypeOf(a));
+  // this call is unnecessary here: Object.setPrototypeOf(ret, Object.getPrototypeOf(a));
+  // since Array.prototype.slice will call a constructor
+  return ret;
   
 };
 
@@ -41,12 +43,14 @@ const copyFunction = (fn: Function) => {
   };
   
   for (const [k, v] of Object.entries(fn)) {
-    ret[k] = v;
+    ret[k] = copy(v);
   }
   
   return Object.setPrototypeOf(ret, Object.getPrototypeOf(fn));
   
 };
+
+
 
 const copy = (v: any) => {
   
@@ -57,15 +61,15 @@ const copy = (v: any) => {
     return copyArray(v);
   }
   
-  if (typeof v === 'function') {
+  if (v && typeof v === 'function') {
     return copyFunction(v);
   }
   
-  if (typeof v === 'object') {
+  if (v && typeof v === 'object') {
     return copyObject(v);
   }
   
-  throw 'internal lib error - not object array or function';
+  return v;
   
 };
 
@@ -94,15 +98,13 @@ const mixin = (a: HasIndex, b: HasIndex, s: Set<any>) => {
       continue;
     }
     
-    const c = copy(val);
-    
     if (!hasOwnProp) {
-      a[key] = c;
+      a[key] = copy(val);
       continue;
     }
     
     if (canHaveProperties(a[key])) {
-      mixin(a[key], c, s);
+      mixin(a[key], val, s);
     }
     
   }

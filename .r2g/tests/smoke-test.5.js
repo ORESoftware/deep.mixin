@@ -44,6 +44,9 @@ const v2 = {
     foo() {
       return this.cat.snake;
     },
+    bar() {
+      return this.cat.fark;
+    },
     cat: {
       snake: 7
     }
@@ -81,6 +84,8 @@ const fnRes = res.dog.foo();
 console.log('fn res:', fnRes);
 
 assert(fnRes === 7);
+
+assert(res.dog.bar() === '3');
 
 console.log(res.dog.foo.big);
 
