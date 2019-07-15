@@ -23,7 +23,7 @@ const assert = require('assert');
 const v1 = {
   dog: {
     bird: 2,
-    foo: () => {
+    foo() {
       return 'm1';
     },
     cat: {
@@ -41,8 +41,8 @@ v1.dog.foo.big = 8;
 
 const v2 = {
   dog: {
-    foo: () => {
-      return this;
+    foo() {
+      return this.cat.snake;
     },
     cat: {
       snake: 7

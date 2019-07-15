@@ -3,66 +3,25 @@
 const {deepMixin} = require('@oresoftware/deep.mixin');
 const assert = require('assert');
 
-
-const v1 = {
-  dog: {
-    bird: 2,
-    foo() {
-      return 'm1';
-    },
-    cat: {
-      fark: '3',
-      snake: 5
-    }
+const copyArray = (a) => {
+  
+  const ret = a.slice(0);
+  
+  for (const [k, v] of Object.entries(a)) {
+    ret[k] = v;
   }
+  
+  return ret;
+  
 };
 
-const dog = v1.dog;
-const foo = dog.foo;
-const cat = dog.cat;
+const z = [1,2,3];
 
-v1.dog.foo.big = 8;
+z[0] = 0;
+z.foo = 5;
 
-const v2 = {
-  dog: {
-    foo() {
-      return this.cat.snake;
-    },
-    cat: {
-      snake: 7
-    }
-  }
-};
+console.log(z.slice(0));
 
-const dog2 = v2.dog;
-const foo2 = dog2.foo;
-const cat2 = dog2.cat;
+const v = copyArray(z);
 
-
-console.log('result:', deepMixin(v1, v2));
-
-
-assert(dog === v1.dog);
-assert(cat === v1.dog.cat);
-assert(foo === v1.dog.foo);
-
-
-assert(dog2 === v2.dog);
-assert(cat2 === v2.dog.cat);
-assert(foo2 === v2.dog.foo);
-
-
-// assert(deepMixin({}, v1, v2).dog.cat !== v1.dog.cat);
-
-const res = deepMixin(v1, v2);
-
-assert(res.dog.bird === 2);
-console.log('res:', res);
-
-const fnRes = res.dog.foo();
-console.log('fn res:', fnRes);
-
-assert(fnRes === 7);
-
-// console.log(res.dog.foo.big);
-
+console.log(v);

@@ -18,19 +18,19 @@ const copyObject = (a: HasIndex) => {
     ret[k] = v;
   }
   
-  return ret;
+  return Object.setPrototypeOf(ret, Object.getPrototypeOf(a));
   
 };
 
 const copyArray = (a: HasIndex) => {
   
-  const ret = [] as any;
+  const ret = a.slice(0);
   
   for (const [k, v] of Object.entries(a)) {
     ret[k] = v;
   }
   
-  return ret;
+  return Object.setPrototypeOf(ret, Object.getPrototypeOf(a));
   
 };
 
@@ -44,7 +44,7 @@ const copyFunction = (fn: Function) => {
     ret[k] = v;
   }
   
-  return ret;
+  return Object.setPrototypeOf(ret, Object.getPrototypeOf(fn));
   
 };
 
