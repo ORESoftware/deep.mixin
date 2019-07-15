@@ -11,15 +11,14 @@ CircleCI build status:
 
 ##  Deep.Mixin on NPM
 
-### 
-> Why? Because Object.assign is lacking
+> Why? Because Object.assign is shallow
 
 ### Design
 
 > Deep.Mixin will copy sub-properties of objects, instead of only
 > handling top-level properties, when doing a merge. This library is ideal for merging configuration objects.
 > But it's also a good drop-in replacement for Object.assign if you want deep merging/mixins.
-
+>
 > * Copies functions properly
 > * Deep clones everything
 > * Immutability (always returns a new object, doesn't modify any arguments)
@@ -28,8 +27,9 @@ CircleCI build status:
 
 ### Limitations
 
+>
 > * Only accepts POJSOs as arguments - for example we cannot do `deepMixin({},[])`
-
+>
 
 ### Basic Usage
 
