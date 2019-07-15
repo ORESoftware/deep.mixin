@@ -23,6 +23,7 @@ CircleCI build status:
 > * Deep clones everything
 > * Immutability (always returns a new object, doesn't modify any arguments)
 > * Handles circular refs
+> * Written in TypeScript
 >
 
 ### Limitations
