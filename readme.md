@@ -32,6 +32,8 @@ const v3 = deepMixin(v1,v2);
 
 ```
 
+<details>
+<summary><strong>Code Example</strong></summary>
 
 ```js
 const {deepMixin} = require('@oresoftware/deep.mixin');
@@ -75,6 +77,8 @@ console.log(deepMixin(v1,v2));  // next line
 }
 ```
 
+</details>
+
 
 
 ### Other / Etc
@@ -84,7 +88,7 @@ console.log(deepMixin(v1,v2));  // next line
 
 ```js
 
-const v4 =  deepMixin(thirdPrecedence, secondPrec, firstPrecendence);
+const v4 =  deepMixin(thirdPrecedence, secondPrec, firstPrec);
 
 // or switch the order:
 const v4 = deepMixinRight(firstPrecendence, secondPrec, thirdPrec)

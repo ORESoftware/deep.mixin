@@ -1,5 +1,5 @@
 
-```js
+
 const {deepMixin} = require('@oresoftware/deep.mixin');
 
 const v1 = {
@@ -33,12 +33,4 @@ console.log(Object.assign({},v1,v2));  // { dog: { foo: [Function: foo], cat: { 
 console.log(deepMixin(v1,v2));  // next line
 
 
-{
-  dog: {
-    foo: [Function: foo] { big: 8 },
-    cat: { snake: 7, fark: '3' },
-    bird: 2
-  }
-}
-```
 
