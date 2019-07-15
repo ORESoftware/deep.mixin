@@ -10,11 +10,11 @@ export const r2gSmokeTest = function () {
 type HasIndex = { [key: string]: any };
 
 
-const copy = (a: HasIndex) => {
+const copyObject = (a: HasIndex) => {
   
   const ret = {} as any;
   
-  for(const [k,v] of Object.entries(a)){
+  for (const [k, v] of Object.entries(a)) {
     ret[k] = v;
   }
   
@@ -22,86 +22,104 @@ const copy = (a: HasIndex) => {
   
 };
 
+const copyArray = (a: HasIndex) => {
+  
+  const ret = [] as any;
+  
+  for (const [k, v] of Object.entries(a)) {
+    ret[k] = v;
+  }
+  
+  return ret;
+  
+};
+
+const copyFunction = (fn: Function) => {
+  
+  const ret = <any>function () {
+    return fn.apply(this, arguments);
+  };
+  
+  for (const [k, v] of Object.entries(fn)) {
+    ret[k] = v;
+  }
+  
+  return ret;
+  
+};
+
+const copy = (v: any) => {
+  
+  if (Array.isArray(v)) {
+    if (typeof v === 'function') {
+      throw 'Internal library problem - object is array and a function.';
+    }
+    return copyArray(v);
+  }
+  
+  if (typeof v === 'function') {
+    return copyFunction(v);
+  }
+  
+  if (typeof v === 'object') {
+    return copyObject(v);
+  }
+  
+  throw 'internal lib error - not object array or function';
+  
+};
+
+
+const canHaveProperties = (val: any) => {
+  return val && (typeof val === 'object' || typeof val === 'function');
+};
+
+
 const mixin = (a: HasIndex, b: HasIndex, s: Set<any>) => {
-  
-  // if(typeof a !== 'object'){
-  //   return b || {};
-  // }
-  
-  // if(typeof b !== 'object'){
-  //   return a || {};
-  // }
-  
-  console.log('a:', a);
-  console.log('b:', b);
-  console.log('-----------');
   
   for (const [key, val] of Object.entries(b)) {
     
-    // console.log('a:', key, a[key]);
-    // console.log('b:', key, b[key]);
+    let hasOwnProp = false;
     
-    if (!(val && typeof val === 'object')) {
-      a[key] = val;
-      continue;
-    }
-  
-    // if (!(val && typeof val === 'function')) {
-    //   a[key] = val;
-    //   continue;
-    // }
-    
-    if (!a.hasOwnProperty(key)) {
-      a[key] = val;
+    try {
+      hasOwnProp = a.hasOwnProperty(key);
+    } catch (err) {
       continue;
     }
     
-    if (!(a[key] && typeof a[key] === 'object')) {
-      a[key] = val;
+    if (!canHaveProperties(val)) {
+      if (!hasOwnProp) {
+        a[key] = val;
+      }
       continue;
     }
     
-    if (a[key] === val) {
+    const c = copy(val);
+    
+    if (!hasOwnProp) {
+      a[key] = c;
       continue;
     }
     
-    // if (s.has(val)) {
-    //   a[key] = val;
-    //   continue;
-    // }
-    //
-    // s.add(val);
+    if (canHaveProperties(a[key])) {
+      mixin(a[key], c, s);
+    }
     
-    const c = copy(a[key]);
-    
-    mixin(c, val, s);
-    
-    a[key] = c;
-    
-    // a[key] = b[key];
   }
   
   return a;
   
 };
 
-// export const deepMixin = (...v: object[]) => {
-//   return v.reduce((a, b) => mixin(a, b, new Set()), {});
-// };
-
-const assert = require('assert');
 
 export const deepMixin = (...v: object[]) => {
-  
-  const z = {};
-  
-  return v.reduce((a, b) => {
-    assert(a === z);
-    return mixin(a, b, new Set())
-  }, z);
-  
-  
+  return v.reduceRight((a, b) => mixin(a, b, new Set()), {});
 };
+
+export const deepMixinRight = (...v: object[]) => {
+  return v.reduce((a, b) => mixin(a, b, new Set()), {});
+};
+
 
 export default deepMixin;
 
