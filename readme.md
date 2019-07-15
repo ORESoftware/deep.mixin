@@ -16,8 +16,19 @@ CircleCI build status:
 
 ### Design
 
-> Deep.Mixin is immutable only, unlike Object.assign. Deep.Mixin will copy sub-properties of objects, instead of only
-> handling top-level properties, when doing a merge.
+> Deep.Mixin will copy sub-properties of objects, instead of only
+> handling top-level properties, when doing a merge. This library is ideal for merging configuration objects.
+> But it's also a good drop-in replacement for Object.assign if you want deep merging/mixins.
+
+> * Copies functions properly
+> * Deep clones everything
+> * Immutability (always returns a new object, doesn't modify any arguments)
+> * Handles circular refs
+>
+
+### Limitations
+
+> * Only accepts POJSOs as arguments - for example we cannot do `deepMixin({},[])`
 
 
 ### Basic Usage
@@ -83,8 +94,7 @@ console.log(deepMixin(v1,v2));  // next line
 
 ### Other / Etc
 
-> You can flip the order of operands, using  `deepMixinRight()`
-> (Named because of reduce/reduceRight)
+> You can reverse the order of operands, using  `deepMixinRight()`
 
 ```js
 
