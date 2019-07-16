@@ -18,6 +18,10 @@ const copyObject = (a: HasIndex) => {
     ret[k] = copy(v);
   }
   
+  for (const k of Object.getOwnPropertySymbols(a)) {
+    ret[k] = copy(a[k as any])
+  }
+  
   return Object.setPrototypeOf(ret, Object.getPrototypeOf(a));
   
 };
@@ -28,6 +32,10 @@ const copyArray = (a: HasIndex) => {
   
   for (const [k, v] of Object.entries(a)) {
     ret[k] = copy(v);
+  }
+  
+  for (const k of Object.getOwnPropertySymbols(a)) {
+    ret[k] = copy(a[k as any])
   }
   
   // this call is unnecessary here: Object.setPrototypeOf(ret, Object.getPrototypeOf(a));
@@ -46,10 +54,13 @@ const copyFunction = (fn: Function) => {
     ret[k] = copy(v);
   }
   
+  for (const k of Object.getOwnPropertySymbols(fn)) {
+    ret[k] = copy((fn as any)[k as any])
+  }
+  
   return Object.setPrototypeOf(ret, Object.getPrototypeOf(fn));
   
 };
-
 
 
 const copy = (v: any) => {
