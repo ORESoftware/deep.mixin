@@ -90,7 +90,7 @@ const canHaveProperties = (val: any) => {
 };
 
 
-const mixin = (a: HasIndex, b: HasIndex, s: Set<any>) => {
+const mixin = (a: HasIndex, b: HasIndex, s: Map<any, any>): any => {
   
   for (const [key, val] of Object.entries(b)) {
     
@@ -110,7 +110,13 @@ const mixin = (a: HasIndex, b: HasIndex, s: Set<any>) => {
     }
     
     if (!hasOwnProp) {
-      a[key] = copy(val);
+      
+      if (s.has(val)) {
+        a[key] = s.get(val);
+        continue;
+      }
+      
+      s.set(val, a[key] = copy(val));
       continue;
     }
     
@@ -125,12 +131,18 @@ const mixin = (a: HasIndex, b: HasIndex, s: Set<any>) => {
 };
 
 
-export const deepMixin = (...v: object[]) => {
-  return v.reduceRight((a, b) => mixin(a, b, new Set()), {});
+export const deepMixinTyped = function <A, B, C, D, E>(a: A, b?: B, c?: C, d?: D, ...args: E[]): A & B & C & D & E {
+  return Array.from(arguments).reduceRight((a, b) => mixin(a, b || {}, new Map()), {});
 };
 
+
+export const deepMixin = (...v: object[]) => {
+  return v.reduceRight((a, b) => mixin(a, b || {}, new Map()), {});
+};
+
+
 export const deepMixinRight = (...v: object[]) => {
-  return v.reduce((a, b) => mixin(a, b, new Set()), {});
+  return v.reduce((a, b) => mixin(a, b || {}, new Map()), {});
 };
 
 
