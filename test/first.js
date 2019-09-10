@@ -1,22 +1,22 @@
 #!/usr/bin/env node
-var cp = require('child_process');
-var path = require('path');
-var fs = require('fs');
-var http = require('http');
-var assert = require('assert');
-var EE = require('events');
-var strm = require('stream');
-var deepMixin = require('deep.mixin').deepMixin;
-var z = { c: 5, d: 333, g: 888 };
-var v = {};
+const cp = require('child_process');
+const path = require('path');
+const fs = require('fs');
+const http = require('http');
+const assert = require('assert');
+const EE = require('events');
+const strm = require('stream');
+const { deepMixin } = require('deep.mixin');
+const z = { c: 5, d: 333, g: 888 };
+const v = {};
 console.log(deepMixin(v, { a: { b: z } }, { a: { e: z, b: { c: 3, d: 44 } } }));
-var m1 = {
-    a: '3', foo: function () {
+const m1 = {
+    a: '3', foo() {
         console.log('m1');
     }
 };
-var m2 = {
-    a: '3', fo: function () {
+const m2 = {
+    a: '3', fo() {
         console.log('m2');
     }
 };
