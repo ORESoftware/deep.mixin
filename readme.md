@@ -11,7 +11,7 @@ CircleCI build status:
 
 ##  Deep.Mixin on NPM
 
-> Why? Because Object.assign is shallow
+> Why? Because Object.assign / spread operator is shallow
 
 ### Design
 
