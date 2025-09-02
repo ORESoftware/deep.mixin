@@ -69,6 +69,62 @@ const copyFunction = (fn: Function, s: Map<any, any>) => {
 };
 
 const copy = (v: any, s: Map<any, any>) => {
+  // FIX: Handle Date objects and other built-in objects properly
+  if (v instanceof Date) {
+    return new Date(v.getTime());
+  }
+
+  // FIX: Use Reflect to dynamically handle other built-in objects
+  if (v && typeof v === 'object' && v.constructor !== Object && v.constructor !== Array) {
+    try {
+      // Get the constructor function
+      const cnstr = Reflect.getPrototypeOf(v).constructor;
+
+      // Check if it's a built-in constructor (not a custom class)
+      if (cnstr !== Object && cnstr !== Array && cnstr !== Function) {
+        // Try to create a new instance using the constructor
+        if (cnstr === Date) {
+          return new Date(v.getTime());
+        } else if (cnstr === RegExp) {
+          return new RegExp(v.source, v.flags);
+        } else if (cnstr === Map) {
+          const newMap = new Map();
+          for (const [key, value] of v.entries()) {
+            newMap.set(copy(key, s), copy(value, s));
+          }
+          return newMap;
+        } else if (cnstr === Set) {
+          const newSet = new Set();
+          for (const value of v.values()) {
+            newSet.add(copy(value, s));
+          }
+          return newSet;
+        } else if (cnstr === ArrayBuffer) {
+          return v.slice(0); // Copy ArrayBuffer
+        } else if (cnstr === Uint8Array || cnstr === Uint16Array ||
+          cnstr === Uint32Array || cnstr === Int8Array ||
+          cnstr === Int16Array || cnstr === Int32Array ||
+          cnstr === Float32Array || cnstr === Float64Array) {
+          // @ts-ignore
+          return new cnstr(v);
+        }
+
+        // For other built-in objects, try to use constructor with spread
+        try {
+          // Try to create new instance with the same arguments
+          // @ts-ignore
+          return new cnstr(v);
+        } catch (e) {
+          // Fall back to regular object copying if constructor fails
+          console.warn(`Failed to copy ${cnstr.name}, falling back to object copy`);
+        }
+      }
+    } catch (e) {
+      // If Reflect fails, fall back to regular object copying
+      console.warn('Reflect failed, falling back to object copy');
+    }
+  }
+
   if (Array.isArray(v)) {
     if (typeof v === 'function') {
       throw 'Internal library problem - object is array and a function.';
@@ -88,6 +144,55 @@ const copy = (v: any, s: Map<any, any>) => {
 };
 
 const copyNoFunctions = (v: any, s: Map<any, any>) => {
+  // FIX: Handle Date objects and other built-in objects properly
+  if (v instanceof Date) {
+    return new Date(v.getTime());
+  }
+
+  // FIX: Use Reflect to dynamically handle other built-in objects
+  if (v && typeof v === 'object' && v.constructor !== Object && v.constructor !== Array) {
+    try {
+      const cnstr = Reflect.getPrototypeOf(v).constructor;
+
+      if (cnstr !== Object && cnstr !== Array && cnstr !== Function) {
+        if (cnstr === Date) {
+          return new Date(v.getTime());
+        } else if (cnstr === RegExp) {
+          return new RegExp(v.source, v.flags);
+        } else if (cnstr === Map) {
+          const newMap = new Map();
+          for (const [key, value] of v.entries()) {
+            newMap.set(copyNoFunctions(key, s), copyNoFunctions(value, s));
+          }
+          return newMap;
+        } else if (cnstr === Set) {
+          const newSet = new Set();
+          for (const value of v.values()) {
+            newSet.add(copyNoFunctions(value, s));
+          }
+          return newSet;
+        } else if (cnstr === ArrayBuffer) {
+          return v.slice(0);
+        } else if (cnstr === Uint8Array || cnstr === Uint16Array ||
+          cnstr === Uint32Array || cnstr === Int8Array ||
+          cnstr === Int16Array || cnstr === Int32Array ||
+          cnstr === Float32Array || cnstr === Float64Array) {
+          // @ts-ignore
+          return new cnstr(v);
+        }
+
+        try {
+          // @ts-ignore
+          return new cnstr(v);
+        } catch (e) {
+          console.warn(`Failed to copy ${cnstr.name}, falling back to object copy`);
+        }
+      }
+    } catch (e) {
+      console.warn('Reflect failed, falling back to object copy');
+    }
+  }
+
   if (Array.isArray(v)) {
     if (typeof v === 'function') {
       throw 'Internal library problem - object is array and a function.';
