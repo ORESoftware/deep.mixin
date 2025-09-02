@@ -1,6 +1,6 @@
 {
   "name": "@oresoftware/deep.mixin",
-  "version": "0.0.109",
+  "version": "1.0.12",
   "description": "Semver-oriented TypeScript library skeleton.",
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
