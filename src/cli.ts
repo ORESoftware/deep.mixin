@@ -9,7 +9,7 @@ const v = <A, B, C, D>(a: A, b?: B, c?: C, d?: D):  D & C & B & A => {
 };
 
 
-console.log(v({a: 'foo'}, {a: 5}, {a(){ return {toFixed(){return 'foo'}}}}).a().toFixed());
+console.log((v({a: 'foo'}, {a: 5}, {a(){ return {toFixed(){return 'foo'}}}}) as any).a().toFixed());
 
 
 

@@ -1,6 +1,6 @@
 
 
-const {deepMixin} = require('@oresoftware/deep.mixin');
+const {deepMixin} = require('../dist/main.js');
 
 const v1 = {
   dog: {

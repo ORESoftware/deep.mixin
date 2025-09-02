@@ -8,7 +8,7 @@ const assert = require('assert');
 const EE = require('events');
 const strm = require('stream');
 
-const {deepMixin} = require('deep.mixin');
+const {deepMixin} = require('../dist/main.js');
 
 const z = {c: 5, d: 333, g: 888};
 const v = {};

@@ -1,4 +1,4 @@
-const {deepMixin} = require('@oresoftware/deep.mixin');
+const {deepMixin} = require('../dist/main.js');
 const assert = require('assert');
 
 const v1 = {
