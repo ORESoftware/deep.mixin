@@ -1,21 +1,27 @@
 {
   "compileOnSave": false,
-  "allowJs": false,
   "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
     "declaration": false,
     "allowJs": false,
     "pretty": true,
     "skipLibCheck": true,
-    "baseUrl": ".",
-    "target": "es6",
+    "baseUrl": "..",
+    "target": "es2022",
     "module": "commonjs",
     "noImplicitAny": true,
     "removeComments": true,
     "allowUnreachableCode": true,
+    "downlevelIteration": true,
+    "resolveJsonModule": true,
+    "sourceMap": false,
     "lib": [
-      "es2015",
-      "es2016",
-      "es2017"
+      "es2022",
+      "es2023"
     ]
-  }
+  },
+  "include": [
+    "src"
+  ]
 }

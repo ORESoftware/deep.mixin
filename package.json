@@ -6,7 +6,14 @@
   "types": "dist/main.d.ts",
   "typings": "dist/main.d.ts",
   "scripts": {
-    "test": "node test/simple.js",
+    "test": "npm run test:build && node --test test/dist/*.test.js",
+    "test:build": "cd test && npx tsc",
+    "test:simple": "npm run test:build && node --test test/dist/simple.test.js",
+    "test:example": "npm run test:build && node --test test/dist/example.test.js",
+    "test:first": "npm run test:build && node --test test/dist/first.test.js",
+    "test:enhanced": "npm run test:build && node --test test/dist/enhanced-functionality.test.js",
+    "test:ts": "npm run test:build && node --test test/dist/*.test.js",
+    "test:legacy": "node test/simple.js",
     "postinstall": "./assets/postinstall.sh",
     "xyz": "./scripts/npm/xyz.sh"
   },
@@ -28,7 +35,7 @@
   "homepage": "https://github.com/ORESoftware/typescript-library-skeleton#readme",
   "dependencies": {},
   "devDependencies": {
-    "@types/node": "^10.12.10",
-    "typescript": "^3.4.5"
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
   }
 }
