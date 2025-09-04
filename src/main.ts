@@ -75,12 +75,22 @@ const copyBuiltInWithProperties = (v: any, newInstance: any, s: Map<any, any>) =
 
   s.set(v, newInstance);
 
-  for (const k of Object.keys(v)) {
-    newInstance[k] = copy(v[k], s);
-  }
+  // Use try-catch to handle objects with private fields that can't be accessed
+  try {
+    for (const k of Object.keys(v)) {
+      newInstance[k] = copy(v[k], s);
+    }
 
-  for (const k of Object.getOwnPropertySymbols(v)) {
-    newInstance[k] = copy(v[k as any], s);
+    for (const k of Object.getOwnPropertySymbols(v)) {
+      newInstance[k] = copy(v[k as any], s);
+    }
+  } catch (e) {
+    // If we can't access properties due to private fields, return a safe representation
+    // This handles objects like Headers, URLSearchParams, etc. that have private fields
+    return {
+      '[Object]': `Unable to serialize ${v.constructor?.name || 'object'} - contains private fields`,
+      constructor: v.constructor?.name || 'Unknown'
+    };
   }
 
   return newInstance;
@@ -93,18 +103,28 @@ const copyBuiltInWithPropertiesNoFunctions = (v: any, newInstance: any, s: Map<a
 
   s.set(v, newInstance);
 
-  for (const k of Object.keys(v)) {
-    const copied = copyNoFunctions(v[k], s);
-    if (copied !== undefined || (v[k] !== undefined && typeof v[k] !== 'function')) {
-      newInstance[k] = copied;
+  // Use try-catch to handle objects with private fields that can't be accessed
+  try {
+    for (const k of Object.keys(v)) {
+      const copied = copyNoFunctions(v[k], s);
+      if (copied !== undefined || (v[k] !== undefined && typeof v[k] !== 'function')) {
+        newInstance[k] = copied;
+      }
     }
-  }
 
-  for (const k of Object.getOwnPropertySymbols(v)) {
-    const copied = copyNoFunctions(v[k as any], s);
-    if (copied !== undefined || (v[k as any] !== undefined && typeof v[k as any] !== 'function')) {
-      newInstance[k] = copied;
+    for (const k of Object.getOwnPropertySymbols(v)) {
+      const copied = copyNoFunctions(v[k as any], s);
+      if (copied !== undefined || (v[k as any] !== undefined && typeof v[k as any] !== 'function')) {
+        newInstance[k] = copied;
+      }
     }
+  } catch (e) {
+    // If we can't access properties due to private fields, return a safe representation
+    // This handles objects like Headers, URLSearchParams, etc. that have private fields
+    return {
+      '[Object]': `Unable to serialize ${v.constructor?.name || 'object'} - contains private fields`,
+      constructor: v.constructor?.name || 'Unknown'
+    };
   }
 
   return newInstance;
@@ -364,21 +384,30 @@ const copyObjectNoFunctions = (a: HasIndex, s: Map<any, any>) => {
   const ret = {} as any;
   s.set(a, ret);
 
-  for (const [k, v] of Object.entries(a)) {
-    const copied = copyNoFunctions(v, s);
-    if (copied !== undefined || (v !== undefined && typeof v !== 'function')) {
-      (ret as any)[k] = copied;
+  // Use try-catch to handle objects with private fields that can't be accessed
+  try {
+    for (const [k, v] of Object.entries(a)) {
+      const copied = copyNoFunctions(v, s);
+      if (copied !== undefined || (v !== undefined && typeof v !== 'function')) {
+        (ret as any)[k] = copied;
+      }
     }
-  }
 
-  for (const k of Object.getOwnPropertySymbols(a)) {
-    const copied = copyNoFunctions(a[k as any], s);
-    if (copied !== undefined || (a[k as any] !== undefined && typeof a[k as any] !== 'function')) {
-      (ret as any)[k] = copied;
+    for (const k of Object.getOwnPropertySymbols(a)) {
+      const copied = copyNoFunctions(a[k as any], s);
+      if (copied !== undefined || (a[k as any] !== undefined && typeof a[k as any] !== 'function')) {
+        (ret as any)[k] = copied;
+      }
     }
-  }
 
-  return Object.setPrototypeOf(ret, Object.getPrototypeOf(a));
+    return Object.setPrototypeOf(ret, Object.getPrototypeOf(a));
+  } catch (e) {
+    // If we can't access properties due to private fields, return a safe representation
+    return {
+      '[Object]': `Unable to serialize ${a.constructor?.name || 'object'} - contains private fields`,
+      constructor: a.constructor?.name || 'Unknown'
+    };
+  }
 };
 
 const copyArrayNoFunctions = (a: any[], s: Map<any, any>) => {
