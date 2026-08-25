@@ -7,7 +7,7 @@
   "typings": "dist/main.d.ts",
   "scripts": {
     "test": "npm run test:build && node --test test/dist/*.test.js",
-    "test:build": "cd test && npx tsc",
+    "test:build": "npx tsc && npx tsc --project test/tsconfig.test.json",
     "test:simple": "npm run test:build && node --test test/dist/simple.test.js",
     "test:example": "npm run test:build && node --test test/dist/example.test.js",
     "test:first": "npm run test:build && node --test test/dist/first.test.js",

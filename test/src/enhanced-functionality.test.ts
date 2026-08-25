@@ -2,7 +2,13 @@
 
 import { test, describe } from 'node:test';
 const assert = require('node:assert');
-import { deepMixin, deepMixinNoFunctions, deepMixinRight, deepMixinRightNoFunctions } from '../../dist/main.js';
+import {
+  deepMixin,
+  deepMixinClean,
+  deepMixinNoFunctions,
+  deepMixinRight,
+  deepMixinRightNoFunctions
+} from '../../dist/main.js';
 
 describe('Enhanced Deep Mixin Functionality', () => {
   
@@ -215,8 +221,14 @@ describe('Enhanced Deep Mixin Functionality', () => {
   });
 
   test('Null and undefined handling', () => {
-    const objWithNulls1 = { a: null, b: { c: undefined } };
-    const objWithNulls2 = { a: 'not null', b: { c: 'defined', d: null } };
+    const objWithNulls1: {
+      a: string | null;
+      b: { c: string | undefined; d?: null };
+    } = { a: null, b: { c: undefined } };
+    const objWithNulls2: {
+      a: string | null;
+      b: { c: string | undefined; d: null };
+    } = { a: 'not null', b: { c: 'defined', d: null } };
     const result = deepMixin(objWithNulls1, objWithNulls2);
     
     assert.strictEqual(result.a, 'not null', 'Should override null with non-null value');
@@ -248,6 +260,68 @@ describe('Enhanced Deep Mixin Functionality', () => {
     // Symbols are compared by reference, so we can't use strictEqual
     // Instead, we check that the symbol exists and is from the second object
     assert(result.sym === primitives2.sym, 'Should use later Symbol');
+  });
+
+  test('deepMixinRightNoFunctions keeps left precedence and removes functions', () => {
+    const result = deepMixinRightNoFunctions(
+      { value: 'left', nested: { left: true }, fn: () => 'left' },
+      { value: 'right', nested: { right: true }, fn: () => 'right' }
+    );
+
+    assert.strictEqual(result.value, 'left', 'Should preserve left precedence');
+    assert.deepStrictEqual(result.nested, { left: true, right: true });
+    assert.strictEqual(result.fn, undefined, 'Should remove functions from both sides');
+  });
+
+  test('deepMixinClean keeps safe built-ins and excludes executable collections', () => {
+    const createdAt = new Date('2026-08-25T00:00:00Z');
+    const pattern = /safe/gi;
+    const bytes = new Uint8Array([1, 2, 3]);
+    const result = deepMixinClean({
+      createdAt,
+      pattern,
+      bytes,
+      map: new Map([['secret', 'value']]),
+      set: new Set(['secret']),
+      fn: () => 'secret'
+    });
+
+    assert(result.createdAt instanceof Date);
+    assert.notStrictEqual(result.createdAt, createdAt);
+    assert.strictEqual(result.createdAt.getTime(), createdAt.getTime());
+    assert(result.pattern instanceof RegExp);
+    assert.strictEqual(result.pattern.source, pattern.source);
+    assert(result.bytes instanceof Uint8Array);
+    assert.deepStrictEqual(Array.from(result.bytes), [1, 2, 3]);
+    assert.strictEqual(result.map, undefined);
+    assert.strictEqual(result.set, undefined);
+    assert.strictEqual(result.fn, undefined);
+  });
+
+  test('deepMixinClean returns plain objects without inherited properties', () => {
+    class WithPrototype {
+      inherited() {
+        return 'not copied';
+      }
+    }
+    const value = Object.assign(new WithPrototype(), { own: { safe: true } });
+
+    const result = deepMixinClean(value);
+
+    assert.deepStrictEqual(result, { own: { safe: true } });
+    assert.strictEqual(Object.getPrototypeOf(result), Object.prototype);
+    assert.strictEqual(result.inherited, undefined);
+  });
+
+  test('deepMixinClean preserves circular identity without retaining the source', () => {
+    const source: any = { name: 'root' };
+    source.self = source;
+
+    const result = deepMixinClean(source);
+
+    assert.notStrictEqual(result, source);
+    assert.strictEqual(result.name, 'root');
+    assert.strictEqual(result.self, result);
   });
 
 });
