@@ -342,4 +342,3 @@ export const mixinNoFunctions = (a: HasIndex, b: HasIndex, s: Map<any, any>): an
 
   return a;
 };
-

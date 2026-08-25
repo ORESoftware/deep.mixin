@@ -427,4 +427,3 @@ const copyArrayNoFunctions = (a: any[], s: Map<any, any>) => {
 
   return ret;
 };
-

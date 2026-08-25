@@ -48,16 +48,16 @@ const copyClean = (v: any, s: Map<any, any>) => {
     }
     const ret = {} as any;
     s.set(v, ret);
-    
+
     // Only copy own enumerable properties, no prototype
     for (const [k, val] of Object.entries(v)) {
       ret[k] = copyClean(val, s);
     }
-    
+
     for (const k of Object.getOwnPropertySymbols(v)) {
       ret[k] = copyClean((v as any)[k], s);
     }
-    
+
     return ret;
   }
 
@@ -124,7 +124,7 @@ export const mixinClean = (a: HasIndex, b: HasIndex, s: Map<any, any>): any => {
   // Handle symbol keys - only copy own enumerable properties
   for (const key of Object.getOwnPropertySymbols(b)) {
     const val = (b as any)[key];
-    
+
     // Skip Maps, Sets, and Functions
     if (val instanceof Map || val instanceof Set || typeof val === 'function') {
       continue;
@@ -160,4 +160,3 @@ export const mixinClean = (a: HasIndex, b: HasIndex, s: Map<any, any>): any => {
 
   return a;
 };
-
