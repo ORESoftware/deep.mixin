@@ -19,3 +19,11 @@ package-lock.json
 ### inverse
 !dist/.gitkeep
 !dist/readme.md
+tmp
+temp
+tmp/worktrees
+temp/worktrees
+
+# Sanctioned scratch locations - AGENTS.md requires both, trailing-slash form
+tmp/
+temp/
